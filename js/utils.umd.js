@@ -548,8 +548,8 @@ class ZipGenerator {
         const manifest = {
             format_version: 2,
             header: {
-                name: `投影-扩展包-${projectName}`,
-                description: `编号ID：${generateUUID()}扩展包模板  §l§4该扩展包需依赖于投影模组运行，作者：EnderTrekker&wed15`,
+                name: `Construct-Expansion-${projectName}`,
+                description: `ID：${generateUUID()} Made by Construct Pack Generator`,
                 uuid: generateUUID(),
                 version: [1, 0, 0],
                 min_engine_version: [1, 21, 90]
@@ -597,7 +597,7 @@ class ZipGenerator {
         const mainJsContent = `//@ts-ignore
 import { world, system, EasingType } from "@minecraft/server";
 
-const HELP_MESSAGE = \`使用打开构筑菜单，点击创建新项目，输入:\\n${fileNames}\\n点击应用放置对应项目\`;
+const HELP_MESSAGE = \`Open the Construct menu,enter:\\n${fileNames}\\n as the Structure ID\`;
 world.afterEvents.playerSpawn.subscribe((event) => {
     if (event.initialSpawn) {
         system.runTimeout(() => {
