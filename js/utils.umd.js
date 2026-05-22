@@ -249,7 +249,7 @@ function applyI18n() {
     // 更新语言切换按钮文本
     const langBtn = document.getElementById('langSwitchBtn');
     if (langBtn) {
-        langBtn.textContent = currentLang === 'zh' ? 'EN' : '中文';
+        langBtn.textContent = currentLang === 'zh' ? 'EN' : 'ZH';
     }
 }
 
