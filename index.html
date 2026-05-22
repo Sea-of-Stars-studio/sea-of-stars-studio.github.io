@@ -1,730 +1,459 @@
-/**
- * 工具函数集合 - 文件压缩工具
- * @author wed15
- * @version 1.1.0
- */
-
-// 国际化文本配置
-const i18n = {
-    zh: {
-        // 页面标题
-        PAGE_TITLE: '投影拓展包生成器--自动，本地',
-        
-        // 状态消息
-        STATUS_READY: '准备就绪',
-        STATUS_PROCESSING: '正在处理文件...',
-        STATUS_GENERATING: '正在生成压缩包...',
-        STATUS_COMPLETE: '压缩包已生成，可以下载了！',
-        STATUS_DOWNLOAD_START: '下载已开始！',
-        STATUS_FILE_ADDED: '文件 {name} 已添加！',
-        STATUS_FILE_EXISTS: '文件 {name} 已存在！',
-        STATUS_FILE_ERROR: '处理文件 {name} 时出错: {error}',
-        STATUS_FILE_DELETED: '文件已删除',
-        STATUS_NO_FILES: '请先添加文件！',
-        STATUS_GENERATING_ZIP: '正在生成压缩包...',
-        STATUS_COMPLETE_DONE: '处理完成！',
-        STATUS_NO_DOWNLOAD: '没有可下载的文件',
-        STATUS_DOWNLOAD_STARTED: '下载已开始',
-        STATUS_DOWNLOAD_FAILED: '下载失败: {error}',
-        STATUS_BROWSER_HINT: '建议在浏览器中打开该网站(右上角三个点哦!)',
-        
-        // 错误消息
-        ERROR_NO_FILES: '没有上传任何文件',
-        ERROR_FILE_READ: '读取文件时出错',
-        ERROR_ZIP_GENERATE: '生成压缩包时出错',
-        ERROR_DOWNLOAD_FAIL: '下载失败',
-        ERROR_NO_DOWNLOAD_FILE: '没有可下载的文件，请先生成压缩包',
-        ERROR_INVALID_FILE_TYPE: '只支持 .mcstructure、.nbt 和 .litematic 文件',
-        ERROR_IMAGE_FETCH: '获取图像时出错',
-        ERROR_ZIP_ERROR: '生成压缩包时出错: {error}',
-        
-        // UI文本
-        PROGRESS_TEXT: '处理中...',
-        PROGRESS_COMPLETE: '完成！',
-        DROP_ZONE_TEXT: '拖放文件到此处，或点击',
-        SELECT_FILES_BTN: '选择文件',
-        DOWNLOAD_BTN: '下载压缩包',
-        
-        // 页面标题和副标题
-        MAIN_TITLE: '投影包生成工具',
-        SUB_TITLE: '无需上传 本地生成 大文件秒传 支持多文件',
-        NAV_DOWNLOAD: '下载汉化投影主包',
-        
-        // 上传区域
-        SECTION_UPLOAD: '上传文件',
-        FORMAT_HINT: '支持格式：.mcstructure | .nbt | .litematic',
-        
-        // 配置区域
-        SECTION_CONFIG: '配置选项',
-        LABEL_PROJECT_NAME: '拓展包名称:',
-        DEFAULT_PROJECT_NAME: '我的投影包',
-        BTN_PROCESS: '处理并生成投影拓展包',
-        
-        // 进度区域
-        SECTION_PROGRESS: '处理进度',
-        
-        // 下载区域
-        SECTION_DOWNLOAD: '下载投影拓展包',
-        DOWNLOAD_READY: '您的文件已准备就绪',
-        
-        // 删除按钮
-        BTN_DELETE: '删除',
-        
-        // 底部
-        FOOTER_SPONSOR: '赞助我们',
-        FOOTER_ICP: '赣ICP备2026005549号-1',
-        FOOTER_CDN: 'Esa分站',
-        
-        // 下载页面
-        DL_PAGE_TITLE: '投影汉化主包下载中心',
-        DL_MAIN_TITLE: '汉化投影主包下载中心',
-        DL_SUB_TITLE: '选择版本下载 持续更新中',
-        DL_NAV_BACK: '返回投影包生成工具',
-        DL_SECTION_AVAILABLE: '可用版本',
-        DL_BTN_DOWNLOAD: '下载',
-        DL_STATUS_START: '开始下载: {name}',
-        DL_STATUS_FAILED: '下载失败: {error}',
-        
-        // 海外版专用
-        OV_PAGE_TITLE: 'Construct Expansion Pack Generator',
-        OV_MAIN_TITLE: 'Construct Pack Generator',
-        OV_SUB_TITLE: '100% Offline · No Upload · Instant Convert',
-        OV_FOOTER_POWERED: 'Powered by Sea-of-Stars-Studio',
-        OV_STATUS_HINT: 'Open in browser for best experience'
-    },
-    en: {
-        // Page title
-        PAGE_TITLE: 'Construct Expansion Pack Generator - Offline & Local',
-        
-        // Status messages
-        STATUS_READY: 'Ready',
-        STATUS_PROCESSING: 'Processing files...',
-        STATUS_GENERATING: 'Generating archive...',
-        STATUS_COMPLETE: 'Archive generated, ready to download!',
-        STATUS_DOWNLOAD_START: 'Download started!',
-        STATUS_FILE_ADDED: 'File {name} added!',
-        STATUS_FILE_EXISTS: 'File {name} already exists!',
-        STATUS_FILE_ERROR: 'Error processing {name}: {error}',
-        STATUS_FILE_DELETED: 'File deleted',
-        STATUS_NO_FILES: 'Please add files first!',
-        STATUS_GENERATING_ZIP: 'Generating archive...',
-        STATUS_COMPLETE_DONE: 'Processing complete!',
-        STATUS_NO_DOWNLOAD: 'No file to download',
-        STATUS_DOWNLOAD_STARTED: 'Download started',
-        STATUS_DOWNLOAD_FAILED: 'Download failed: {error}',
-        STATUS_BROWSER_HINT: 'Please open this site in a browser (tap the 3 dots in the top right!)',
-        
-        // Error messages
-        ERROR_NO_FILES: 'No files uploaded',
-        ERROR_FILE_READ: 'Error reading file',
-        ERROR_ZIP_GENERATE: 'Error generating archive',
-        ERROR_DOWNLOAD_FAIL: 'Download failed',
-        ERROR_NO_DOWNLOAD_FILE: 'No file to download, please generate archive first',
-        ERROR_INVALID_FILE_TYPE: 'Only .mcstructure, .nbt and .litematic files are supported',
-        ERROR_IMAGE_FETCH: 'Error fetching image',
-        ERROR_ZIP_ERROR: 'Error generating archive: {error}',
-        
-        // UI text
-        PROGRESS_TEXT: 'Processing...',
-        PROGRESS_COMPLETE: 'Complete!',
-        DROP_ZONE_TEXT: 'Drag files here or click to select',
-        SELECT_FILES_BTN: 'Select Files',
-        DOWNLOAD_BTN: 'Download Archive',
-        
-        // Page title and subtitle
-        MAIN_TITLE: 'Construct Pack Generator',
-        SUB_TITLE: 'No Upload · Local Processing · Fast Transfer · Multi-File',
-        NAV_DOWNLOAD: 'Download Chinese Projection Pack',
-        
-        // Upload section
-        SECTION_UPLOAD: 'Upload Files',
-        FORMAT_HINT: '.mcstructure|nbt|litematic',
-        
-        // Config section
-        SECTION_CONFIG: 'Configuration',
-        LABEL_PROJECT_NAME: 'Pack Name:',
-        DEFAULT_PROJECT_NAME: 'My Construct Pack',
-        BTN_PROCESS: 'Process & Generate Pack',
-        
-        // Progress section
-        SECTION_PROGRESS: 'Processing Progress',
-        
-        // Download section
-        SECTION_DOWNLOAD: 'Download Your Pack',
-        DOWNLOAD_READY: 'Your file is ready',
-        
-        // Delete button
-        BTN_DELETE: 'Delete',
-        
-        // Footer
-        FOOTER_SPONSOR: 'Sponsor Us',
-        FOOTER_ICP: '赣ICP备2026005549号-1',
-        FOOTER_CDN: 'ESA',
-        
-        // Download page
-        DL_PAGE_TITLE: 'Download Construct Addon',
-        DL_MAIN_TITLE: 'Projection Pack Download Center',
-        DL_SUB_TITLE: 'Select a version to download · Updated regularly',
-        DL_NAV_BACK: 'Back to Pack Generator',
-        DL_SECTION_AVAILABLE: 'Available Versions',
-        DL_BTN_DOWNLOAD: 'Download',
-        DL_STATUS_START: 'Downloading: {name}',
-        DL_STATUS_FAILED: 'Download failed: {error}',
-        
-        // Overseas version
-        OV_PAGE_TITLE: 'Construct Expansion Pack Generator',
-        OV_MAIN_TITLE: 'Construct Pack Generator',
-        OV_SUB_TITLE: '100% Offline · No Upload · Instant Convert',
-        OV_FOOTER_POWERED: 'Powered by Sea-of-Stars-Studio',
-        OV_STATUS_HINT: 'Open in browser for best experience'
-    }
-};
-
-// 当前语言设置（可通过 switchLang 切换）
-let currentLang = 'zh';
-
-/**
- * 带变量替换的翻译函数
- * @param {string} key - i18n 键名
- * @param {Object} vars - 替换变量，如 {name: 'test.txt'}
- * @returns {string} 翻译后的文本
- */
-function t(key, vars) {
-    let text = i18n[currentLang][key] || key;
-    if (vars) {
-        for (const [k, v] of Object.entries(vars)) {
-            text = text.replace('{' + k + '}', v);
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construct Expansion Pack Generator</title>
+    <link rel="icon" href="image.png" type="image/x-icon">
+    <script src="libs/jszip.min.js"></script>
+    <script src="libs/spark-md5.min.js"></script>
+    <script src="js/utils.umd.js"></script>
+    <script src="./js/convert/litematicToNbt/litematic-to-nbt.umd.js"></script>
+    <script src="./js/convert/nbtToMcbe/nbt-to-mcstructure.umd.js"></script>
+    <style>
+        :root {
+            --ov-bg: #0f0f1a;
+            --ov-bg2: #1a1a2e;
+            --ov-card: rgba(255,255,255,0.05);
+            --ov-card-border: rgba(255,255,255,0.08);
+            --ov-accent: #f97316;
+            --ov-accent2: #fb923c;
+            --ov-file: rgba(251, 146, 60, 0.3);
+            --ov-text: #e2e8f0;
+            --ov-text2: #94a3b8;
+            --ov-danger: #ef4444;
+            --ov-success: #22c55e;
+            --ov-radius: 16px;
+            --ov-file-bord: rgba(255,255,255,0.16);
+            --ov-shadow: 0 8px 32px rgba(0,0,0,0);
         }
-    }
-    return text;
-}
+        @media (prefers-color-scheme: light) {
+            :root {
+                --ov-bg: #f1f5f9;
+                --ov-bg2: #e2e8f0;
+                --ov-card: rgba(255,255,255,0.05);
+                --ov-card-border: rgba(0,0,0,0.06);
+                --ov-accent: #7c3aed;
+                --ov-accent2: #06b6d4;
+                --ov-file: rgba(124,58,237,0.3);
+                --ov-text: #1e293b;
+                --ov-text2: #64748b;
+                --ov-file-bord: rgba(0, 0, 0, 0.16);
 
-/**
- * 切换语言并应用到页面
- * @param {string} lang - 目标语言 'zh' 或 'en'
- */
-function switchLang(lang) {
-    if (!i18n[lang]) return;
-    currentLang = lang;
-    // 存储到 localStorage
-    try { localStorage.setItem('lang', lang); } catch(e) {}
-    applyI18n();
-}
-
-/**
- * 将 i18n 翻译应用到页面中所有带 data-i18n 属性的元素
- */
-function applyI18n() {
-    // 页面标题
-    document.title = t('PAGE_TITLE');
-    
-    // 遍历所有带 data-i18n 属性的元素
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        const val = i18n[currentLang][key];
-        if (val !== undefined) {
-            if (el.tagName === 'INPUT' && el.type !== 'button') {
-                // input 元素：仅当当前值等于任一语言的默认值时才替换（避免覆盖用户输入）
-                const attr = el.getAttribute('data-i18n-attr') || 'value';
-                const currentVal = el[attr];
-                const allDefaults = Object.values(i18n).map(lang => lang[key]);
-                if (allDefaults.includes(currentVal) || currentVal === '') {
-                    el[attr] = val;
-                }
-            } else {
-                el.textContent = val;
+                --ov-shadow: 0 8px 32px rgba(0,0,0,0);
             }
         }
-    });
-    
-    // 处理 data-i18n-placeholder 属性
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        const val = i18n[currentLang][key];
-        if (val !== undefined) {
-            el.placeholder = val;
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--ov-bg);
+            color: var(--ov-text);
+            min-height: 100vh;
+            line-height: 1.6;
         }
-    });
-    
-    // 更新语言切换按钮文本
-    const langBtn = document.getElementById('langSwitchBtn');
-    if (langBtn) {
-        langBtn.textContent = currentLang === 'zh' ? 'EN' : 'ZH';
-    }
-}
-
-/**
- * 初始化语言：优先系统语言，若有手动切换记录则使用手动选择，默认 zh
- */
-function initLang() {
-    // 1. 先根据系统语言设置默认值
-    try {
-        const sysLang = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
-        currentLang = sysLang.startsWith('zh') ? 'zh' : 'en';
-    } catch(e) {}
-    // 2. 若用户曾手动切换过语言，优先使用手动选择
-    try {
-        const saved = localStorage.getItem('lang');
-        if (saved && i18n[saved]) {
-            currentLang = saved;
+        /* 导航栏 */
+        .ov-nav {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 32px;
+            background: var(--ov-card);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--ov-card-border);
+            position: sticky; top: 0; z-index: 100;
         }
-    } catch(e) {}
-}
-
-/**
- * UUID生成器 - 符合RFC4122标准
- * @returns {string} 生成的UUID字符串
- */
-function generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
-
-/**
- * 计算文件MD5哈希值用于去重
- * @param {File} file - 要计算哈希的文件对象
- * @returns {Promise<string>} 文件的MD5哈希值
- */
-function computeFileHash(file) {
-    return new Promise((resolve, reject) => {
-        const spark = new SparkMD5.ArrayBuffer();
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            spark.append(e.target.result);
-            resolve(spark.end());
-        };
-        
-        reader.onerror = function() {
-            reject(new Error(i18n[currentLang].ERROR_FILE_READ));
-        };
-        
-        reader.readAsArrayBuffer(file);
-    });
-}
-
-/**
- * 验证文件类型是否为.mcstructure、.nbt 或.litematic
- * @param {File} file - 要验证的文件对象
- * @returns {boolean} 是否为有效文件类型
- */
-function isValidFileType(file) {
-    const fileName = file.name.toLowerCase();
-    return fileName.endsWith('.mcstructure') || 
-           fileName.endsWith('.nbt') || 
-           fileName.endsWith('.litematic');
-}
-
-/**
- * 格式化文件大小显示
- * @param {number} bytes - 文件大小（字节）
- * @returns {string} 格式化后的文件大小字符串
- */
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;                                    // 单位换算基数
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];        // 单位数组
-    const i = Math.floor(Math.log(bytes) / Math.log(k)); // 计算单位级别
-    // 返回格式化后的大小字符串
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-/**
- * 文件处理器类
- */
-class FileProcessor {
-    constructor() {
-        this.uploadedFiles = [];
-        this.fileHashes = new Set();
-        this.generatedZipBlob = null;
-        this.convertedFiles = new Map(); // 存储转换后的文件数据
-    }
-    
-    /**
-     * 添加文件到处理队列
-     * @param {File} file - 要添加的文件
-     * @returns {Promise<boolean>} 是否成功添加
-     */
-    async addFile(file) {
-        // 验证文件类型
-        if (!isValidFileType(file)) {
-            throw new Error(i18n[currentLang].ERROR_INVALID_FILE_TYPE);
+        .ov-nav-brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:18px; }
+        .ov-nav-brand img { width:32px; height:32px; border-radius:8px; }
+        /* 语言切换 */
+        .lang-toggle {
+            background: transparent; color: var(--ov-accent);
+            border: 1.5px solid var(--ov-accent); border-radius: 20px;
+            padding: 5px 16px; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: all 0.25s ease;
         }
-
-        // 计算文件哈希值用于去重
-        const hash = await computeFileHash(file);
-        if (this.fileHashes.has(hash)) {
-            return false; // 文件已存在，跳过
+        .lang-toggle:hover { background: var(--ov-accent); color: #fff; }
+        .lang-toggle:active { transform: scale(0.95); }
+        /* 主内容 */
+        .ov-main { max-width: 720px; margin: 0 auto; padding: 40px 20px 60px; }
+        /* Hero */
+        .ov-hero { text-align: center; margin-bottom: 40px; }
+        .ov-hero h1 {
+            font-size: 36px; font-weight: 800;
+            background: linear-gradient(135deg, var(--ov-accent), var(--ov-accent2));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; margin-bottom: 12px;
         }
+        .ov-hero p { color: var(--ov-text2); font-size: 16px; letter-spacing: 0.5px; }
+        /* 卡片 */
+        .ov-card {
+            background: var(--ov-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--ov-card-border);
+            border-radius: var(--ov-radius);
+            padding: 28px; margin-bottom: 20px;
+            box-shadow: var(--ov-shadow);
+        }
+        .ov-card h2 {
+            font-size: 18px; font-weight: 700; margin-bottom: 18px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .ov-card h2 .ov-hint { font-size: 12px; font-weight: 400; color: var(--ov-text2); margin-left: auto; }
+        /* 拖放区域 */
+        #dropZone {
+            border: 2px dashed var(--ov-file); border-radius: 12px;
+            padding: 40px 20px; text-align: center; cursor: pointer;
+            transition: all 0.3s ease; background: rgba(124,58,237,0.03);
+        }
+        #dropZone:hover, #dropZone.drag-over {
+            border-color: var(--ov-accent); background: rgba(124,58,237,0.08);
+        }
+        #dropZone span { color: var(--ov-text2); font-size: 15px; display: block; margin-bottom: 14px; }
+        /* 按钮统一 */
+        button {
+            background: transparent; color: var(--ov-accent);
+            border: 1.5px solid var(--ov-accent); border-radius: 10px;
+            padding: 10px 24px; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.25s ease;
+        }
+        button:hover { background: var(--ov-accent); color: #fff; }
+        button:active { transform: scale(0.97); }
+        button.danger { color: var(--ov-danger); border-color: var(--ov-danger); }
+        button.danger:hover { background: var(--ov-danger); color: #fff; }
+        /* 文件列表 */
+        #fileList button{
+            padding: 5px 12px;
+        }
+        #fileList { margin-top: 14px; }
+        .file-item {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.06); border: 1px solid var(--ov-file-bord);
+            border-radius: 16px; padding: 16px 20px; margin-bottom: 12px;
+            animation: fileItemIn 0.35s ease both;
+        }
+        .file-item:hover {
+            background: rgba(255,255,255,0.12);
+            transform: translateX(2px);
+            border-color: var(--ov-file-bord);
+        }
+        .file-item.removing {
+            animation: fileItemOut 0.25s ease both;
+        }
+        .file-info { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .file-name { font-weight: 700; font-size: 15px; color: var(--ov-text); }
+        .file-size { color: var(--ov-text2); font-size: 13px; }
+        .file-type-badge {
+            display: inline-block; padding: 4px 12px; border-radius: 999px;
+            font-size: 10px; font-weight: 700; color: #fff;
+        }
+        .file-type-badge[style*="background"] {
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+        }
+        @keyframes fileItemIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.98);
+                height: 0;
+                margin-bottom: 0;
+                padding: 0 20px;
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                height: auto;
+                margin-bottom: 12px;
+                padding: 16px 20px;
+            }
+        }
+        @keyframes fileItemOut {
+            from {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                height: auto;
+                margin-bottom: 12px;
+                padding: 16px 20px;
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-10px) scale(0.98);
+                height: 0;
+                margin-bottom: 0;
+                padding: 0 20px;
+            }
+        }
+        /* 输入框 */
+        input[type="text"] {
+            background: rgba(255,255,255,0.05); color: var(--ov-text);
+            border: 1px solid var(--ov-card-border); border-radius: 10px;
+            padding: 10px 16px; font-size: 14px; width: 100%; max-width: 320px;
+            transition: border-color 0.25s ease;
+        }
+        input[type="text"]:focus { outline: none; border-color: var(--ov-accent); }
+        /* 进度条 */
+        .progress-container {
+            width: 100%; height: 8px; background: rgba(255,255,255,0.06);
+            border-radius: 4px; overflow: hidden; margin: 14px 0; border: none;
+        }
+        #progressFill {
+            height: 100%; border-radius: 4px; width: 0%;
+            background: linear-gradient(90deg, var(--ov-accent), var(--ov-accent2));
+            transition: width 0.3s ease;
+        }
+        /* 状态消息 */
+        #statusMessage { padding: 10px 16px; border-radius: 10px; font-size: 13px; margin-top: 10px; }
+        /* 下载区域 */
+        #downloadArea {
+            margin-top: 20px; padding: 14px;
+            background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2);
+            border-radius: var(--ov-radius); text-align: center;
+            transition: height 0.3s ease;
+        }
+        #downloadArea h3 { color: var(--ov-success); margin-bottom: 10px; font-size: 18px; }
+        #downloadArea p { color: var(--ov-success); margin-bottom: 16px; font-size: 14px; }
+        /* 底部 */
+        .ov-footer {
+            text-align: center; padding: 24px; color: var(--ov-text2); font-size: 13px;
+            border-top: 1px solid var(--ov-card-border); margin-top: 40px;
+        }
+        .ov-footer a { color: var(--ov-accent2); text-decoration: none; }
+        .ov-footer a:hover { text-decoration: underline; }
+        /* 入场动画 - 遮罩滑出效果 */
+        @keyframes ovReveal {
+            from {
+                clip-path: inset(0 0 100% 0);
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                clip-path: inset(0 0 0 0);
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes ovRevealDown {
+            from {
+                clip-path: inset(100% 0 0 0);
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+            to {
+                clip-path: inset(0 0 0 0);
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes ovRevealLR {
+            from {
+                clip-path: inset(0 100% 0 0);
+                opacity: 0;
+                transform: translateX(-8px);
+            }
+            to {
+                clip-path: inset(0 0 0 0);
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        /* 标题持续渐变变色 */
+        @keyframes ovColorShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(30deg); }
+        }
+        .ov-nav {
+            animation: ovRevealDown 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .ov-hero h1 {
+            animation:
+                    ovRevealLR 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both,
+                    ovGradientShift 6s ease-in-out 1.1s infinite;
+            background: linear-gradient(135deg, #7c3aed, #06b6d4, #7c3aed);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .ov-hero p {
+            animation: ovReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+        }
+        .upload-card {
+            animation: ovReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+        }
+        .config-card {
+            opacity: 0;
+            transform: translateY(12px);
+        }
+        .config-card.animated {
+            animation: ovReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+        }
+        .progress-card,
+        #downloadArea {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        .progress-card.screen-enter,
+        #downloadArea.screen-enter {
+            animation: screenEnter 0.45s ease both;
+        }
+        .progress-card.screen-exit,
+        #downloadArea.screen-exit {
+            animation: screenExit 0.3s ease both;
+        }
+        .progress-card {
+            animation: none;
+        }
+        #downloadArea {
+            background-color: rgba(40, 167, 69, 0.1);
+            border: 1px solid var(#28a745);
+            border-radius: 8px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+        }
+        #downloadArea h3 {
+            font-size: 20px;
+            letter-spacing: 0.2px;
+        }
+        #downloadArea button {
+            padding: 12px 26px;
+            border-radius: 14px;
+        }
+        .progress-container {
+            background: rgba(255,255,255,0.08);
+        }
+        .progress-card .progress-container {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        #statusMessage {
+            animation: ovReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.6s both;
+        }
+        @keyframes screenEnter {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes screenExit {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+        }
+        @keyframes ovGradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+        .ov-footer {
+            animation: ovReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) 1s both;
+        }
+        /* 移动端适配 */
+        body.device-mobile .ov-nav { padding: 10px 16px; }
+        body.device-mobile .ov-main { padding: 18px 16px 32px; }
+        body.device-mobile .ov-main .ov-card { margin: 0 auto 12px; max-width: calc(100% - 16px); }
+        body.device-mobile .ov-hero h1 { font-size: 20px; line-height: 1.25; }
+        body.device-mobile .ov-hero p { font-size: 12px; line-height: 1.5; }
+        body.device-mobile .ov-card { padding: 14px; margin-bottom: 12px; }
+        body.device-mobile .ov-card h2 { font-size: 15px; }
+        body.device-mobile .ov-card h2 .ov-hint { font-size: 10px; }
+        body.device-mobile #dropZone { padding: 20px 14px; }
+        body.device-mobile button {  padding: 8px 14px; font-size: 13px; }
+        body.device-mobile .file-item button { padding: 8px 12px; font-size: 12px }
+        body.device-mobile .lang-toggle { width: auto; padding: 4px 10px; font-size: 12px; }
+        body.device-mobile input[type="text"] { max-width: 100%; font-size: 13px; }
+        body.device-mobile .file-item { align-items: stretch; padding: 10px 12px; }
+        body.device-mobile .file-info { flex-direction: column; align-items: flex-start; gap: 6px; display: unset}
+        body.device-mobile .file-name { font-size: 14px; word-break: break-word; }
+        body.device-mobile .file-size { font-size: 12px; }
+        body.device-mobile .file-type-badge { display: none; }
+        body.device-mobile .file-item { gap: 10px; }
+    </style>
+</head>
+<body data-i18n-title="OV_PAGE_TITLE">
+<!-- 导航栏 -->
+<nav class="ov-nav">
+    <div class="ov-nav-brand">
+        <img src="image.png" alt="Icon">
+        <span data-i18n="OV_MAIN_TITLE">Construct Expansion Pack Generator</span>
 
-        this.fileHashes.add(hash);
-        this.uploadedFiles.push({
-            file: file,
-            name: file.name,
-            size: file.size,
-            hash: hash
-        });
+    </div>
+    <button id="langSwitchBtn" class="lang-toggle" onclick="switchLang(currentLang==='zh'?'en':'zh')">EN</button>
+</nav>
 
-        // 延迟转换：在生成 ZIP 时再处理 nbt / litematic 文件，避免添加阶段阻塞
-        return true;
-    }
-    
-    /**
-     * 转换 nbt 或 litematic 文件为 mcstructure
-     * @param {File} file - 要转换的文件
-     * @param {string} hash - 文件哈希值
-     */
-    async convertFile(file, hash) {
+<div class="ov-main">
+    <!-- Hero -->
+    <div class="ov-hero">
+        <h1 data-i18n="OV_MAIN_TITLE">Construct Pack Generator</h1>
+        <p data-i18n="OV_SUB_TITLE">100% Offline · No Upload · Instant Convert</p>
+    </div>
+
+    <!-- 上传区域 -->
+    <div class="ov-card upload-card">
+        <h2>
+            <span data-i18n="SECTION_UPLOAD">Upload Files</span>
+            <span class="ov-hint" data-i18n="FORMAT_HINT">Supported: .mcstructure | .nbt | .litematic</span>
+        </h2>
+        <div id="dropZone">
+            <span data-i18n="DROP_ZONE_TEXT">Drag files here or click to select</span>
+            <button id="selectFilesBtn" data-i18n="SELECT_FILES_BTN">Select Files</button>
+            <input type="file" id="fileInput" multiple accept=".mcstructure,.nbt,.litematic" style="display:none;">
+        </div>
+        <div id="fileList"></div>
+    </div>
+
+    <!-- 状态消息 -->
+    <div id="statusMessage" data-i18n="OV_STATUS_HINT">Open in browser for best experience</div>
+
+    <!-- 配置 -->
+    <div class="ov-card config-card">
+        <h2 data-i18n="SECTION_CONFIG">Configuration</h2>
+        <div style="margin-bottom:20px;">
+            <label for="projectName" style="display:block;margin-bottom:8px;font-weight:500;font-size:14px;" data-i18n="LABEL_PROJECT_NAME">Pack Name:</label>
+            <input type="text" id="projectName" value="My Construct Pack" data-i18n="DEFAULT_PROJECT_NAME" data-i18n-attr="value">
+        </div>
+        <button id="processBtn" data-i18n="BTN_PROCESS">Process & Generate Addon</button>
+    </div>
+
+    <!-- 进度 -->
+    <div id="progressArea" class="ov-card progress-card" style="display:none;">
+        <h2 data-i18n="SECTION_PROGRESS">Processing Progress</h2>
+        <div class="progress-container"><div id="progressFill"></div></div>
+        <div id="progressText" style="text-align:center;font-size:13px;color:var(--ov-text2);">0%</div>
+    </div>
+
+    <!-- 下载 -->
+    <div id="downloadArea" style="display:none;">
+        <h3 data-i18n="SECTION_DOWNLOAD">Download Your Pack</h3>
+        <p data-i18n="DOWNLOAD_READY">Your file is ready</p>
+        <button id="downloadBtn" data-i18n="DOWNLOAD_BTN">Download Archive</button>
+    </div>
+
+    <!-- 底部 -->
+    <div class="ov-footer">
+        <span data-i18n="OV_FOOTER_POWERED">Powered by Sea-of-Stars-Studio</span>
+        &nbsp;·&nbsp;
+        <a href="https://afdian.com/a/Endertrekker" target="_blank" data-i18n="FOOTER_SPONSOR">Sponsor Us</a>
+        &nbsp;·&nbsp;
+        <a href="https://github.com/ForestOfLight/Construct" target="_blank" data-i18n="DL_PAGE_TITLE">Download Construct Addon</a>
+    </div>
+</div>
+
+<script>
+    // 海外版默认英文，除非用户手动切换过
+    (function() {
         try {
-            const fileName = file.name.toLowerCase();
-            let mcstructureData = null;
-            let convertedFileName = '';
-            
-            if (fileName.endsWith('.litematic')) {
-                // Litematic 先转 NBT，再转 Mcstructure（需要两步转换）
-                if (typeof window.LitematicConverter === 'undefined') {
-                    console.warn('LitematicConverter 未加载，跳过转换');
-                    return;
-                }
-
-                const nbtResult = await window.LitematicConverter.convert(file);
-                if (!nbtResult.success) {
-                    console.error(`Litematic 转 NBT 失败：${nbtResult.error}`);
-                    return;
-                }
-                
-                if (typeof window.NBTToMcStructure === 'undefined') {
-                    console.warn('NBTToMcStructure 未加载，跳过转换');
-                    return;
-                }
-                
-                await window.NBTToMcStructure.init('./data/');
-                const buffer = nbtResult.data;
-                const result = await window.NBTToMcStructure.convert(
-                    buffer,
-                    file.name.replace(/\.litematic$/i, '.nbt'),
-                    { version: '1.21.0.03' }
-                );
-                
-                if (result.success) {
-                    mcstructureData = result.data;
-                    convertedFileName = file.name.replace(/\.litematic$/i, '.mcstructure');
-                } else {
-                    console.error(`NBT 转 Mcstructure 失败：${result.error}`);
-                    return;
-                }
-            } else if (fileName.endsWith('.nbt')) {
-                // NBT 直接转 Mcstructure
-                if (typeof window.NBTToMcStructure === 'undefined') {
-                    console.warn('NBTToMcStructure 未加载，跳过转换');
-                    return;
-                }
-                
-                await window.NBTToMcStructure.init('./data/');
-                const buffer = await file.arrayBuffer();
-                const result = await window.NBTToMcStructure.convert(
-                    buffer,
-                    file.name,
-                    { version: '1.21.0.03' }
-                );
-                
-                if (result.success) {
-                    mcstructureData = result.data;
-                    convertedFileName = file.name.replace(/\.nbt$/i, '.mcstructure');
-                } else {
-                    console.error(`NBT 转 Mcstructure 失败：${result.error}`);
-                    return;
-                }
-            }
-            
-            if (mcstructureData) {
-                this.convertedFiles.set(hash, {
-                    data: mcstructureData,
-                    name: convertedFileName,
-                    originalName: file.name
-                });
-                console.log(`文件转换成功：${file.name} → ${convertedFileName}`);
-            }
-        } catch (error) {
-            console.error(`转换文件 ${file.name} 失败:`, error);
-        }
-    }
-    
-    /**
-     * 清空所有文件
-     */
-    clearFiles() {
-        this.uploadedFiles = [];
-        this.fileHashes.clear();
-        this.generatedZipBlob = null;
-        this.convertedFiles.clear();
-    }
-    
-    /**
-     * 获取文件数量
-     * @returns {number} 文件总数
-     */
-    getFileCount() {
-        return this.uploadedFiles.length;
-    }
-    
-    /**
-     * 根据哈希值删除文件
-     * @param {string} hash - 文件哈希值
-     * @returns {boolean} 是否成功删除
-     */
-    removeFileByHash(hash) {
-        const initialLength = this.uploadedFiles.length;
-        this.uploadedFiles = this.uploadedFiles.filter(f => f.hash !== hash);
-        this.fileHashes.delete(hash);
-        this.convertedFiles.delete(hash); // 同时删除转换后的文件
-        return this.uploadedFiles.length < initialLength;
-    }
-}
-
-/**
- * ZIP生成器类
- */
-class ZipGenerator {
-    constructor(fileProcessor, progressManager = null) {
-        this.fileProcessor = fileProcessor;
-        this.progressManager = progressManager;
-        this.zip = new JSZip();
-    }
-    
-    /**
-     * 生成完整的ZIP包
-     * @param {string} projectName - 项目名称
-     * @returns {Promise<Blob>} 生成的ZIP文件Blob
-     */
-    async generate(projectName) {
-        try {
-            // 更新进度：开始生成
-            this.updateProgress(10);
-            
-            // 生成manifest.json配置文件
-            this.generateManifest(projectName);
-            this.updateProgress(30);
-            
-            // 生成脚本文件
-            await this.generateScripts();
-            this.updateProgress(50);
-            
-            // 添加图标文件
-            await this.addIcon();
-            this.updateProgress(70);
-
-            // 添加用户上传的结构文件
-            await this.addStructureFiles();
-            this.updateProgress(90);
-            
-            // 生成最终的ZIP文件
-            const blob = await this.createZipBlob();
-            this.updateProgress(100);
-            
-            return blob;
-        } catch (error) {
-            console.error('生成ZIP文件失败:', error);
-            throw error;
-        }
-    }
-    
-    /**
-     * 更新进度
-     * @param {number} percentage - 进度百分比
-     */
-    updateProgress(percentage) {
-        if (this.progressManager) {
-            this.progressManager.update(percentage);
-        }
-    }
-    
-    /**
-     * 生成manifest.json配置文件
-     * @param {string} projectName - 项目名称
-     */
-    generateManifest(projectName) {
-        const manifest = {
-            format_version: 2,
-            header: {
-                name: `投影-扩展包-${projectName}`,
-                description: `编号ID：${generateUUID()}扩展包模板  §l§4该扩展包需依赖于投影模组运行，作者：EnderTrekker&wed15`,
-                uuid: generateUUID(),
-                version: [1, 0, 0],
-                min_engine_version: [1, 21, 90]
-            },
-            modules: [
-                {
-                    type: "data",
-                    uuid: generateUUID(),
-                    version: [1, 0, 0]
-                },
-                {
-                    type: "script",
-                    language: "javascript",
-                    uuid: generateUUID(),
-                    entry: "scripts/main.js",
-                    version: [1, 0, 0]
-                }
-            ],
-            dependencies: [
-                {
-                    module_name: "@minecraft/server",
-                    version: "2.1.0"
-                }
-            ]
-        };
-        
-        this.zip.file("manifest.json", JSON.stringify(manifest, null, 2));
-    }
-    
-    /**
-     * 生成脚本文件
-     */
-    async generateScripts() {
-        const scriptsFolder = this.zip.folder("scripts");
-        let fileNames = this.fileProcessor.uploadedFiles
-
-            .map(file => file.name.replace(/\.mcstructure$/i, ''))
-            .map(file => JSON.stringify(file))
-
-            .join("或\n");
-
-
-        
-            
-        const mainJsContent = `//@ts-ignore
-import { world, system, EasingType } from "@minecraft/server";
-
-const HELP_MESSAGE = \`使用打开构筑菜单，点击创建新项目，输入:\\n${fileNames}\\n点击应用放置对应项目\`;
-world.afterEvents.playerSpawn.subscribe((event) => {
-    if (event.initialSpawn) {
-        system.runTimeout(() => {
-            event.player.sendMessage(HELP_MESSAGE);
-        }, 20);
-    }
-});
-//@ts-ignore
-world.beforeEvents.chatSend.subscribe((event) => {
-    var freeCameraRunId = Number(event.sender.getDynamicProperty("help")) || 0;
-    if (event.message === "提示") {
-        event.cancel = true;
-        event.sender.sendMessage(HELP_MESSAGE);
-        return;
-    }
-});`;
-        
-        scriptsFolder.file("main.js", mainJsContent);
-    }
-    
-    /**
-     * 添加图标文件
-     * @returns {Promise<void>}
-     */
-    async addIcon() {
-        try {
-            const imageUrl = `./pack_icon.png`;
-            const response = await fetch(imageUrl);
-            if (response.ok) {
-                const blob = await response.blob();
-                this.zip.file("pack_icon.png", blob);
-            }
-        } catch (error) {
-            console.warn(i18n[currentLang].ERROR_IMAGE_FETCH, error);
-        }
-    }
-    
-    /**
-     * 添加结构文件到 ZIP（包括转换后的文件）
-     * @returns {Promise<void>}
-     */
-    async addStructureFiles() {
-        const structuresFolder = this.zip.folder("structures");
-        const files = this.fileProcessor.uploadedFiles;
-            
-        for (const item of files) {
-            let arrayBuffer;
-            let fileName = item.name;
-            const fileNameLower = item.name.toLowerCase();
-            const converted = this.fileProcessor.convertedFiles.get(item.hash);
-
-            if (converted) {
-                // 使用已转换的 mcstructure 文件
-                arrayBuffer = converted.data;
-                fileName = converted.name;
-            } else if (fileNameLower.endsWith('.nbt') || fileNameLower.endsWith('.litematic')) {
-                // 延迟转换
-                await this.fileProcessor.convertFile(item.file, item.hash);
-                const convertedAfter = this.fileProcessor.convertedFiles.get(item.hash);
-                if (convertedAfter) {
-                    arrayBuffer = convertedAfter.data;
-                    fileName = convertedAfter.name;
-                } else {
-                    // 转换失败，回退为原始文件
-                    arrayBuffer = await item.file.arrayBuffer();
-                }
-            } else {
-                arrayBuffer = await item.file.arrayBuffer();
-            }
-                
-            structuresFolder.file(fileName, arrayBuffer);
-        }
-    }
-    
-    /**
-     * 创建ZIP文件Blob
-     * @returns {Promise<Blob>} ZIP文件Blob
-     */
-    async createZipBlob() {
-        return await this.zip.generateAsync({
-            type: "blob",
-            compression: "DEFLATE",
-            compressionOptions: {
-                level: 6
-            }
-        });
-    }
-}
-
-/**
- * 进度管理器
- */
-class ProgressManager {
-    constructor(progressBar, progressText, statusMessage) {
-        this.progressBar = progressBar;
-        this.progressText = progressText;
-        this.statusMessage = statusMessage;
-    }
-    
-    /**
-     * 更新进度显示
-     * @param {number} percentage - 进度百分比 (0-100)
-     */
-    update(percentage) {
-        this.progressBar.style.width = percentage + '%';
-        this.progressText.textContent = Math.round(percentage) + '%';
-    }
-    
-    /**
-     * 显示状态消息
-     * @param {string} message - 消息内容
-     * @param {string} color - 文字颜色
-     */
-    showStatus(message, color = 'black') {
-        this.statusMessage.textContent = message;
-        this.statusMessage.style.color = color;
-        console.log(message)
-    }
-    
-    /**
-     * 重置进度
-     */
-    reset() {
-        this.update(0);
-        this.progressText.textContent = i18n[currentLang].PROGRESS_TEXT;
-        this.showStatus('');
-    }
-}
+            var saved = localStorage.getItem('lang');
+            currentLang = (saved && i18n[saved]) ? saved : 'en';
+        } catch(e) { currentLang = 'en'; }
+    })();
+</script>
+<script src="js/script.uni.js"></script>
+<script>applyI18n();</script>
+</body>
+</html>
