@@ -92,17 +92,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // 处理拖放的文件
     function handleDrop(e) {
         const files = e.dataTransfer.files; // 获取拖放的文件列表
-        handleFiles(files);                 // 调用文件处理函数
-        this.value =""
+
+        handleFiles(files,this);                 // 调用文件处理函数
 
     }
     
     // 处理通过文件选择对话框选择的文件
     function handleFileSelect(e) {
         const files = e.target.files;  // 获取选择的文件列表
+        handleFiles(files,this);            // 调用文件处理函数
 
-        handleFiles(files);            // 调用文件处理函数
-        this.value =""
     }
 
     // 格式化文件大小显示
@@ -116,9 +115,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 统一处理文件（去重并显示）
-    async function handleFiles(files) {
+    /**
+     * @param {FileList} files
+     * */
+    async function handleFiles(files,inputer) {
         for (let i = 0; i < files.length; i++) {
-            const file = files[i];
+            const file = files.item(i);
+
             try {
                 const added = await fileProcessor.addFile(file);
                 if (added) {
@@ -131,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 progressManager.showStatus(t('STATUS_FILE_ERROR', {name: file.name, error: error.message}), 'red');
             }
         }
+        inputer.value=""
     }
 
     // 渲染单个文件项到列表中
