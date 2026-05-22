@@ -368,12 +368,7 @@ class FileProcessor {
             hash: hash
         });
 
-        // 如果是 nbt 或 litematic 文件，立即开始转换
-        const fileName = file.name.toLowerCase();
-        if (fileName.endsWith('.nbt') || fileName.endsWith('.litematic')) {
-            await this.convertFile(file, hash);
-        }
-
+        // 延迟转换：在生成 ZIP 时再处理 nbt / litematic 文件，避免添加阶段阻塞
         return true;
     }
     
@@ -394,7 +389,7 @@ class FileProcessor {
                     console.warn('LitematicConverter 未加载，跳过转换');
                     return;
                 }
-                
+
                 const nbtResult = await window.LitematicConverter.convert(file);
                 if (!nbtResult.success) {
                     console.error(`Litematic 转 NBT 失败：${nbtResult.error}`);
@@ -521,7 +516,7 @@ class ZipGenerator {
             // 添加图标文件
             await this.addIcon();
             this.updateProgress(70);
-            
+
             // 添加用户上传的结构文件
             await this.addStructureFiles();
             this.updateProgress(90);
@@ -653,15 +648,25 @@ world.beforeEvents.chatSend.subscribe((event) => {
         for (const item of files) {
             let arrayBuffer;
             let fileName = item.name;
-                
-            // 检查是否有转换后的文件
+            const fileNameLower = item.name.toLowerCase();
             const converted = this.fileProcessor.convertedFiles.get(item.hash);
+
             if (converted) {
-                // 使用转换后的文件
+                // 使用已转换的 mcstructure 文件
                 arrayBuffer = converted.data;
                 fileName = converted.name;
+            } else if (fileNameLower.endsWith('.nbt') || fileNameLower.endsWith('.litematic')) {
+                // 延迟转换
+                await this.fileProcessor.convertFile(item.file, item.hash);
+                const convertedAfter = this.fileProcessor.convertedFiles.get(item.hash);
+                if (convertedAfter) {
+                    arrayBuffer = convertedAfter.data;
+                    fileName = convertedAfter.name;
+                } else {
+                    // 转换失败，回退为原始文件
+                    arrayBuffer = await item.file.arrayBuffer();
+                }
             } else {
-                // 使用原始文件（已经是 mcstructure 格式）
                 arrayBuffer = await item.file.arrayBuffer();
             }
                 
