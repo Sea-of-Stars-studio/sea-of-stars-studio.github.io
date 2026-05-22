@@ -138,7 +138,7 @@ const i18n = {
         
         // Upload section
         SECTION_UPLOAD: 'Upload Files',
-        FORMAT_HINT: 'Supported: .mcstructure | .nbt | .litematic',
+        FORMAT_HINT: '.mcstructure|nbt|litematic',
         
         // Config section
         SECTION_CONFIG: 'Configuration',
@@ -181,7 +181,7 @@ const i18n = {
 };
 
 // 当前语言设置（可通过 switchLang 切换）
-let currentLang = 'zh';
+let currentLang = 'en';
 
 /**
  * 带变量替换的翻译函数
