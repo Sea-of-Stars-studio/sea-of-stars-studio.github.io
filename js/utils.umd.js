@@ -138,7 +138,7 @@ const i18n = {
         
         // Upload section
         SECTION_UPLOAD: 'Upload Files',
-        FORMAT_HINT: '.mcstructure|nbt|litematic',
+        FORMAT_HINT: 'Supported: mcstructure | nbt | litematic',
         
         // Config section
         SECTION_CONFIG: 'Configuration',
@@ -158,9 +158,7 @@ const i18n = {
         
         // Footer
         FOOTER_SPONSOR: 'Sponsor Us',
-        FOOTER_ICP: '赣ICP备2026005549号-1',
-        FOOTER_CDN: 'ESA',
-        
+
         // Download page
         DL_PAGE_TITLE: 'Download Construct Addon',
         DL_MAIN_TITLE: 'Projection Pack Download Center',
