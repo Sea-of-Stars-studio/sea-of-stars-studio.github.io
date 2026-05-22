@@ -76,7 +76,7 @@ const i18n = {
         FOOTER_CDN: 'Esa分站',
         
         // 下载页面
-        DL_PAGE_TITLE: '投影汉化主包下载中心',
+        DL_PAGE_TITLE: '投影主包下载中心',
         DL_MAIN_TITLE: '汉化投影主包下载中心',
         DL_SUB_TITLE: '选择版本下载 持续更新中',
         DL_NAV_BACK: '返回投影包生成工具',
