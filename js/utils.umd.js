@@ -160,7 +160,7 @@ const i18n = {
         FOOTER_SPONSOR: 'Sponsor Us',
 
         // Download page
-        DL_PAGE_TITLE: 'Download Construct Addon',
+        DL_PAGE_TITLE: 'Download Construct',
         DL_MAIN_TITLE: 'Projection Pack Download Center',
         DL_SUB_TITLE: 'Select a version to download · Updated regularly',
         DL_NAV_BACK: 'Back to Pack Generator',
