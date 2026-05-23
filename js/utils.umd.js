@@ -624,11 +624,11 @@ world.beforeEvents.chatSend.subscribe((event) => {
      */
     async addIcon() {
         try {
-            const imageUrl = `./pack_icon.png`;
+            const imageUrl = `./pack_icon.jpg`;
             const response = await fetch(imageUrl);
             if (response.ok) {
                 const blob = await response.blob();
-                this.zip.file("pack_icon.png", blob);
+                this.zip.file("pack_icon.jpg", blob);
             }
         } catch (error) {
             console.warn(i18n[currentLang].ERROR_IMAGE_FETCH, error);
