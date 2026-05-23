@@ -132,13 +132,13 @@ const i18n = {
         DOWNLOAD_BTN: 'Download Archive',
         
         // Page title and subtitle
-        MAIN_TITLE: 'Construct Pack Generator',
-        SUB_TITLE: 'No Upload · Local Processing · Fast Transfer · Multi-File',
+        MAIN_TITLE: 'Construct Expansion Pack Generator',
+        SUB_TITLE: 'Generate Construct Expansion Pack easily with different files',
         NAV_DOWNLOAD: 'Download Chinese Projection Pack',
         
         // Upload section
         SECTION_UPLOAD: 'Upload Files',
-        FORMAT_HINT: '.mcstructure | .nbt | .litematic',
+        FORMAT_HINT: 'Supported: .mcstructure | .nbt | .litematic',
         
         // Config section
         SECTION_CONFIG: 'Configuration',
@@ -151,7 +151,7 @@ const i18n = {
         
         // Download section
         SECTION_DOWNLOAD: 'Download Your Pack',
-        DOWNLOAD_READY: 'Your file is ready',
+        DOWNLOAD_READY: 'Import Into MCBE & Load It In The World',
         
         // Delete button
         BTN_DELETE: 'Delete',
@@ -172,7 +172,7 @@ const i18n = {
         // Overseas version
         OV_PAGE_TITLE: 'Construct Expansion Pack Generator',
         OV_MAIN_TITLE: 'Construct Pack Generator',
-        OV_SUB_TITLE: '100% Offline · No Upload · Instant Convert',
+        OV_SUB_TITLE: 'Generate Construct Expansion Pack easily with different files',
         OV_FOOTER_POWERED: 'Powered by Sea-of-Stars-Studio',
         OV_STATUS_HINT: 'Open in browser for best experience'
     }
